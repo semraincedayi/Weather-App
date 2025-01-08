@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Weather App</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div class="card">
+            <div class="search">
+                <input type="text" placeholder="Lütfen şehir ismi giriniz." spellcheck="false">
+                <button> <img src="weathericon/search.png"  class="card-img-top"></button>
+            </div>
+            <div class="error">Geçersiz Şehir Adı / Invalid City Name</div>
+            <div class="weather">
+                <img src="weathericon/rainy.png" class="weather-icon">
+                <h1 class="temp">22°C</h1>
+                <h2 class="city">New York</h2>
+                <div class="details">
+                    <div class="col">
+                        <img src="weathericon/humidity.png">
+                        <div>
+                            <p class="nem">50%</p>
+                            <p>Nem</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <img src="weathericon/wind.png">
+                        <div>
+                            <p class="ruzgar">20 km/h</p>
+                            <p>Ruzgar hızı</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+<script>
+const apiKey="0aa4d0378a39e910c549e7a32f6b4416";
+const apiUrl="https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+const searchBox=document.querySelector(".search input");
+const searchBtn=document.querySelector(".search button");
+const weatherIcons={
+    Clouds:"weathericon/clouds.png",
+    Rain:"weathericon/rainy.png",
+    Snow:"weathericon/snowy.png",
+    Clear:"weathericon/sun.png",
+    Drizzle:"weathericon/drizzle.png",
+    Thunderstorm:"weathericon/storm.png",
+
+}
+async function updateWeathericons(data) {
+    const WeatherIcon=document.querySelector(".weather-icon");
+    const weatherCondition=data.weather[0].main;
+    if(weatherIcons[weatherCondition]){
+      WeatherIcon.src=weatherIcons[weatherCondition];
+    }
+    
+}
+async function checkWeather(city){
+    const response=await fetch(apiUrl +city+ '&appid='+apiKey);
+    if(response.status==404)
+    {
+        document.querySelector(".error").style.display="block";
+        document.querySelector(".weather").style.display="none";
+    }
+    else{
+        var data=await response.json();
+        document.querySelector(".city").innerHTML=data.name;
+        document.querySelector(".temp").innerHTML=Math.round(data.main.temp)+"°C";
+        document.querySelector(".nem").innerHTML=data.main.humidity+" %";
+        document.querySelector(".ruzgar").innerHTML=data.wind.speed+" km/h";
+        updateWeathericons(data);
+        document.querySelector(".weather").style.display="block"; 
+        document.querySelector(".error").style.display="none"; 
+    }
+    
+
+
+}//bu fonksiyon fetch ile apiye http isteği atar ve istek sonucu yanıt json formatında çözülür. çözülen veri data değişkenine atılır
+searchBtn.addEventListener("click", ()=>{
+    checkWeather(searchBox.value);
+    
+})
+
+
+</script>
+
+
+    </body>
+</html>
